@@ -31,7 +31,7 @@ def analyser_emballage(data):
     hmin_ok, hmax_ok, prof_ok = zone_autorisee(poids)
 
     fig, ax = plt.subplots(figsize=(7, 9))
-    ax.set_title(f"{data['departement']} - {data['uet']} - {data['poste']} ({data['date']})", fontsize=12)
+    ax.set_title(f"Analyse ergonomique – {data['ref']}", fontsize=14)
     ax.set_xlim(0, max(pmax + 100, prof_ok + 100))
     ax.set_ylim(0, max(hmax + 100, hmax_ok + 100))
 
