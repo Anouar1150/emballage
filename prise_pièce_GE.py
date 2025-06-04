@@ -92,7 +92,7 @@ st.set_page_config(page_title="Analyse Ergonomique d’un Emballage", layout="ce
 st.title("📦 Analyse Ergonomique d’un Emballage")
 
 with st.form("formulaire"):
-    ref = st.text_input("Référence de l’emballage", value="ex: EMB-001")
+    ref = st.text_input("Référence", value="ex: EMB-001")
     poids_piece = st.number_input("Poids d’une pièce (kg)", min_value=0.0, step=0.1)
     nb_lits = st.number_input("Nombre de lits (couches)", min_value=1, step=1)
     pieces_par_lit = st.number_input("Nombre de pièces par lit", min_value=1, step=1)
