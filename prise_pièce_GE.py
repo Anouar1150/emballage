@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import io
 
+
+
 # Fonction pour définir la zone autorisée selon le poids
 def zone_autorisee(poids):
     if poids <= 4:
@@ -29,7 +31,7 @@ def analyser_emballage(data):
     hmin_ok, hmax_ok, prof_ok = zone_autorisee(poids)
 
     fig, ax = plt.subplots(figsize=(7, 9))
-    ax.set_title(f"Analyse ergonomique - {data['ref']}")
+    ax.set_title(f"{data['departement']} - {data['uet']} - {data['poste']} ({data['date']})", fontsize=12)
     ax.set_xlim(0, max(pmax + 100, prof_ok + 100))
     ax.set_ylim(0, max(hmax + 100, hmax_ok + 100))
 
@@ -91,8 +93,15 @@ def analyser_emballage(data):
 st.set_page_config(page_title="Analyse Ergonomique d’un Emballage", layout="centered")
 st.title("📦 Analyse Ergonomique d’un Emballage")
 
+st.sidebar.title("📌 Informations générales")
+departement = st.sidebar.selectbox("Département", ["Logistique", "Tôlerie", "Peinture", "Montage", "Qualité"])
+uet = st.sidebar.text_input("UET")
+poste = st.sidebar.text_input("Poste")
+date = st.sidebar.date_input("Date de l’analyse")
+
+
 with st.form("formulaire"):
-    ref = st.text_input("Référence", value="ex: EMB-001")
+    ref = st.text_input("Référence")
     poids_piece = st.number_input("Poids d’une pièce (kg)", min_value=0.0, step=0.1)
     nb_lits = st.number_input("Nombre de lits (couches)", min_value=1, step=1)
     pieces_par_lit = st.number_input("Nombre de pièces par lit", min_value=1, step=1)
@@ -106,15 +115,20 @@ with st.form("formulaire"):
 
 if submit:
     data = {
-        "ref": ref,
-        "poids_piece": poids_piece,
-        "nb_lits": nb_lits,
-        "pieces_par_lit": pieces_par_lit,
-        "hauteur_sol_min": hauteur_sol_min,
-        "hauteur_sol_max": hauteur_sol_max,
-        "profondeur_min": profondeur_min,
-        "profondeur_max": profondeur_max
-    }
+    "ref": ref,
+    "poids_piece": poids_piece,
+    "nb_lits": nb_lits,
+    "pieces_par_lit": pieces_par_lit,
+    "hauteur_sol_min": hauteur_sol_min,
+    "hauteur_sol_max": hauteur_sol_max,
+    "profondeur_min": profondeur_min,
+    "profondeur_max": profondeur_max,
+    "departement": departement,
+    "uet": uet,
+    "poste": poste,
+    "date": str(date)
+}
+
 
     fig, pourcentage_contraint, nb_contraint, nb_total = analyser_emballage(data)
     st.pyplot(fig)
@@ -130,7 +144,7 @@ if submit:
     st.download_button(
         label="📥 Télécharger le graphique",
         data=buf.getvalue(),
-        file_name=f"analyse_{ref}.png",
+        file_name = f"{departement}_{uet}_{poste}_{date}.png".replace(" ", "_"),
         mime="image/png"
     )
 
