@@ -18,10 +18,11 @@ def zone_autorisee(poids):
     else:
         return (0, 0, 0)
 
+
 # Fonction principale d’analyse
 def analyser_emballage(data):
     poids = data["poids_piece"]
-    nb_lits = data["nb_lits"]
+    nb_lits = int(data["nb_lits"])
     pieces_par_lit = data["pieces_par_lit"]
     hmin = data["hauteur_sol_min"]
     hmax = data["hauteur_sol_max"]
@@ -48,7 +49,7 @@ def analyser_emballage(data):
     hauteur_totale = hmax - hmin
     hauteur_par_lit = hauteur_totale / nb_lits
     pieces_contraignantes = 0
-    total_pieces = pieces_par_lit * nb_lits
+    total_pieces = data.get("nb_total_pieces", pieces_par_lit * nb_lits)
 
     for i in range(nb_lits):
         lit_bas = hmin + i * hauteur_par_lit
@@ -103,8 +104,8 @@ date = st.sidebar.date_input("Date de l’analyse")
 with st.form("formulaire"):
     ref = st.text_input("Référence")
     poids_piece = st.number_input("Poids d’une pièce (kg)", min_value=0.0, step=0.1)
-    nb_lits = st.number_input("Nombre de lits (couches)", min_value=1, step=1)
     pieces_par_lit = st.number_input("Nombre de pièces par lit", min_value=1, step=1)
+    nb_total_pieces = st.number_input("Nombre total de pièces dans l’emballage", min_value=1, step=1)
 
     hauteur_sol_min = st.number_input("Hauteur de la pièce la plus basse (mm)", min_value=0)
     hauteur_sol_max = st.number_input("Hauteur de la pièce la plus haute (mm)", min_value=0)
@@ -114,21 +115,23 @@ with st.form("formulaire"):
     submit = st.form_submit_button("Analyser")
 
 if submit:
-    data = {
-    "ref": ref,
-    "poids_piece": poids_piece,
-    "nb_lits": nb_lits,
-    "pieces_par_lit": pieces_par_lit,
-    "hauteur_sol_min": hauteur_sol_min,
-    "hauteur_sol_max": hauteur_sol_max,
-    "profondeur_min": profondeur_min,
-    "profondeur_max": profondeur_max,
-    "departement": departement,
-    "uet": uet,
-    "poste": poste,
-    "date": str(date)
-}
+    nb_lits = nb_total_pieces / pieces_par_lit
 
+    data = {
+        "ref": ref,
+        "poids_piece": poids_piece,
+        "nb_lits": nb_lits,
+        "pieces_par_lit": pieces_par_lit,
+        "nb_total_pieces": nb_total_pieces,
+        "hauteur_sol_min": hauteur_sol_min,
+        "hauteur_sol_max": hauteur_sol_max,
+        "profondeur_min": profondeur_min,
+        "profondeur_max": profondeur_max,
+        "departement": departement,
+        "uet": uet,
+        "poste": poste,
+        "date": str(date)
+    }
 
     fig, pourcentage_contraint, nb_contraint, nb_total = analyser_emballage(data)
     st.pyplot(fig)
